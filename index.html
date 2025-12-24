@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lean SOP Form</title>
+
+  <link rel="stylesheet" href="./styles.css" />
+<link type="text/css" rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand">
+          <div class="brand__dot" aria-hidden="true"></div>
+          <div class="brand__text">
+            <h1 class="brand__title">Lean SOP Form</h1>
+            <p class="brand__subtitle">Capture case learnings in a clean, repeatable format.</p>
+          </div>
+        </div>
+
+        <div class="topbar__actions">
+          <button type="button" class="btn btn--primary" id="downloadBtn">Download Form Data</button>
+          <button type="button" class="btn btn--ghost" id="clearBtn">Clear Form</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <form id="sopForm" class="card" novalidate>
+
+        <!-- Company / Project -->
+        <section class="section">
+          <div class="section__header">
+            <h2 class="section__title">Company / Project</h2>
+            <p class="section__hint">Used for the exported filename (optional).</p>
+          </div>
+
+          <div class="field">
+            <label class="label" for="companyProjectName">Company / Project name</label>
+            <input
+              class="input"
+              type="text"
+              name="companyProjectName"
+              id="companyProjectName"
+              placeholder="e.g., Acme - Claims Automation"
+            />
+          </div>
+        </section>
+
+        <!-- Company Details -->
+        <section class="section">
+          <div class="section__header">
+            <h2 class="section__title">Company Details</h2>
+            <p class="section__hint">Everything here is optional.</p>
+          </div>
+
+          <div class="grid grid--3">
+            <div class="field">
+              <label class="label">Headquartered in</label>
+              <input class="input" type="text" name="hqIn" placeholder="e.g., Bengaluru, India" />
+            </div>
+            <div class="field">
+              <label class="label">Chairman</label>
+              <input class="input" type="text" name="chairman" placeholder="Name" />
+            </div>
+            <div class="field">
+              <label class="label">CEO</label>
+              <input class="input" type="text" name="ceo" placeholder="Name" />
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <!-- Revenue -->
+            <div class="field">
+              <label class="label">Revenue</label>
+              <div class="grid grid--2 grid--tight">
+                <input class="input" type="text" name="revenueValue" placeholder="Value (e.g., 120M)" />
+                <select class="select" name="revenueCurrency" onchange="toggleOtherInput(this, 'revenueCurrencyOther')">
+                  <option value="">Currency...</option>
+                  <option value="INR">INR</option>
+                  <option value="USD">USD</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <input class="input mt-10" type="text" name="revenueCurrencyOther" id="revenueCurrencyOther" placeholder="Enter currency (e.g., AED)" style="display:none;">
+            </div>
+
+            <!-- Market Cap -->
+            <div class="field">
+              <label class="label">Market cap</label>
+              <div class="grid grid--2 grid--tight">
+                <input class="input" type="text" name="marketCapValue" placeholder="Value (e.g., 2.3B)" />
+                <select class="select" name="marketCapCurrency" onchange="toggleOtherInput(this, 'marketCapCurrencyOther')">
+                  <option value="">Currency...</option>
+                  <option value="INR">INR</option>
+                  <option value="USD">USD</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <input class="input mt-10" type="text" name="marketCapCurrencyOther" id="marketCapCurrencyOther" placeholder="Enter currency (e.g., EUR)" style="display:none;">
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="label">Client vertical <span class="muted">(pick 1)</span></label>
+              <select class="select" name="vertical" onchange="toggleOtherInput(this, 'verticalOther')">
+                <option value="">Select...</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Fintech/Banking">Fintech/Banking</option>
+                <option value="Retail/eCommerce">Retail/eCommerce</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Logistics/Supply Chain">Logistics/Supply Chain</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Real Estate/Construction">Real Estate/Construction</option>
+                <option value="Education">Education</option>
+                <option value="Media/Entertainment">Media/Entertainment</option>
+                <option value="Government/Public sector">Government/Public sector</option>
+                <option value="SaaS/Tech">SaaS/Tech</option>
+                <option value="Other">Other</option>
+              </select>
+              <input class="input mt-10" type="text" name="verticalOther" id="verticalOther" placeholder="Please specify" style="display:none;">
+            </div>
+
+            <div class="field">
+              <label class="label">Employee headcount <span class="muted">(band)</span></label>
+              <select class="select" name="employeeHeadcount">
+                <option value="">Select...</option>
+                <option value="Startup (1–50)">Startup (1–50)</option>
+                <option value="SMB (51–200)">SMB (51–200)</option>
+                <option value="Mid (201–1000)">Mid (201–1000)</option>
+                <option value="Enterprise (1000+)">Enterprise (1000+)</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Products and services</label>
+            <textarea class="textarea" name="productsServices" placeholder="Brief list or description..."></textarea>
+          </div>
+
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="label">Product sales in more than _ countries</label>
+              <input class="input" type="number" name="salesCountriesMoreThan" min="0" placeholder="e.g., 25" />
+            </div>
+            <div class="field">
+              <label class="label">Recent executive changes</label>
+              <textarea class="textarea" name="recentExecChanges" placeholder="e.g., New CTO appointed, CFO resigned..."></textarea>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Presence / facilities in _ countries</label>
+            <div class="grid grid--4 grid--tight">
+              <div>
+                <div class="mini-label">Administrative</div>
+                <input class="input" type="number" name="adminCountries" min="0" placeholder="0" />
+              </div>
+              <div>
+                <div class="mini-label">Manufacturing</div>
+                <input class="input" type="number" name="manufacturingCountries" min="0" placeholder="0" />
+              </div>
+              <div>
+                <div class="mini-label">Operating HQ</div>
+                <input class="input" type="number" name="operatingHqCountries" min="0" placeholder="0" />
+              </div>
+              <div>
+                <div class="mini-label">Geographic HQ</div>
+                <input class="input" type="number" name="geographicHqCountries" min="0" placeholder="0" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 1) Case Overview -->
+        <section class="section">
+          <div class="section__header">
+            <h2 class="section__title">1) Case Overview</h2>
+          </div>
+
+          <div class="field">
+            <label class="label">What did we deliver? <span class="muted">(1 sentence)</span></label>
+            <textarea class="textarea" name="delivery"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="label">Primary solution domain <span class="muted">(pick 1)</span></label>
+            <select class="select" name="primaryDomain" onchange="toggleOtherInput(this, 'primaryDomainOther')">
+              <option value="">Select...</option>
+              <option value="Data pipeline/ETL">Data pipeline/ETL</option>
+              <option value="Data analysis/insights">Data analysis/insights</option>
+              <option value="Data visualization/BI">Data visualization/BI</option>
+              <option value="Fullstack app">Fullstack app</option>
+              <option value="UI/UX">UI/UX</option>
+              <option value="ERP">ERP</option>
+              <option value="Cloud Operations">Cloud Operations</option>
+              <option value="AI">AI</option>
+              <option value="Other">Other</option>
+            </select>
+            <input class="input mt-10" type="text" name="primaryDomainOther" id="primaryDomainOther" placeholder="Please specify" style="display:none;">
+          </div>
+
+          <div class="field">
+            <label class="label">Secondary domains <span class="muted">(pick up to 3)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="secondaryDomains">
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="Data pipeline/ETL">Data pipeline/ETL</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="Data analysis">Data analysis</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="BI/Viz">BI/Viz</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="Fullstack">Fullstack</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="UI/UX">UI/UX</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="DevOps/Infra">DevOps/Infra</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="ML/AI">ML/AI</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="Automation/RPA">Automation/RPA</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="ERP">ERP</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="Cloud Operations">Cloud Operations</label>
+              <label class="option"><input type="checkbox" name="secondaryDomains" value="AI">AI</label>
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="label">Buyer role <span class="muted">(pick 1)</span></label>
+              <select class="select" name="buyer" onchange="toggleOtherInput(this, 'buyerOther')">
+                <option value="">Select...</option>
+                <option value="CEO/Founder">CEO/Founder</option>
+                <option value="COO/Ops">COO/Ops</option>
+                <option value="CTO/Engineering">CTO/Engineering</option>
+                <option value="Head of Data/Analytics">Head of Data/Analytics</option>
+                <option value="Product">Product</option>
+                <option value="Finance">Finance</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Risk/Compliance">Risk/Compliance</option>
+                <option value="IT/Security">IT/Security</option>
+                <option value="Other">Other</option>
+              </select>
+              <input class="input mt-10" type="text" name="buyerOther" id="buyerOther" placeholder="Please specify" style="display:none;">
+            </div>
+
+            <div class="field">
+              <label class="label">Primary users <span class="muted">(pick 1–2)</span></label>
+              <div class="options-grid checkbox-group" data-group-name="primaryUsers">
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Executives">Executives</label>
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Ops teams">Ops teams</label>
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Analysts">Analysts</label>
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Sales">Sales</label>
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Finance">Finance</label>
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Customers">Customers</label>
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Support">Support</label>
+                <label class="option"><input type="checkbox" name="primaryUsers" value="Engineering">Engineering</label>
+                <label class="option">
+                  <input type="checkbox" name="primaryUsers" value="Other" onchange="toggleCheckboxOther(this, 'primaryUsersOther')">Other
+                </label>
+              </div>
+              <input class="input mt-10" type="text" name="primaryUsersOther" id="primaryUsersOther" placeholder="Please specify" style="display:none;">
+            </div>
+          </div>
+        </section>
+
+        <!-- 2) Client Pain Points + Implementation Challenges -->
+        <section class="section">
+          <div class="section__header">
+            <h2 class="section__title">2) Client Pain Points + Implementation Challenges</h2>
+          </div>
+
+          <div class="field">
+            <label class="label">Trigger (why now?) <span class="muted">(pick multiple)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="trigger">
+              <label class="option"><input type="checkbox" name="trigger" value="Reporting visibility gap">Reporting visibility gap</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Manual process too slow">Manual process too slow</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Data quality issues">Data quality issues</label>
+              <label class="option"><input type="checkbox" name="trigger" value="System migration">System migration</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Scaling/growth">Scaling/growth</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Compliance/audit pressure">Compliance/audit pressure</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Cost-cutting">Cost-cutting</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Customer experience issues">Customer experience issues</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Leadership change">Leadership change</label>
+              <label class="option"><input type="checkbox" name="trigger" value="Incident/outage">Incident/outage</label>
+              <label class="option">
+                <input type="checkbox" name="trigger" value="Other" onchange="toggleCheckboxOther(this, 'triggerOther')">Other
+              </label>
+            </div>
+            <input class="input mt-10" type="text" name="triggerOther" id="triggerOther" placeholder="Please specify" style="display:none;">
+          </div>
+
+          <div class="field">
+            <label class="label">Cost of pain <span class="muted">(pick 1–3)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="costOfPain">
+              <label class="option"><input type="checkbox" name="costOfPain" value="Time waste">Time waste</label>
+              <label class="option"><input type="checkbox" name="costOfPain" value="Direct cost">Direct cost</label>
+              <label class="option"><input type="checkbox" name="costOfPain" value="Revenue leakage">Revenue leakage</label>
+              <label class="option"><input type="checkbox" name="costOfPain" value="Risk/compliance exposure">Risk/compliance exposure</label>
+              <label class="option"><input type="checkbox" name="costOfPain" value="Errors/rework">Errors/rework</label>
+              <label class="option"><input type="checkbox" name="costOfPain" value="Slow decisions">Slow decisions</label>
+              <label class="option"><input type="checkbox" name="costOfPain" value="Poor customer experience">Poor customer experience</label>
+              <label class="option"><input type="checkbox" name="costOfPain" value="Low adoption/trust">Low adoption/trust</label>
+              <label class="option">
+                <input type="checkbox" name="costOfPain" value="Other" onchange="toggleCheckboxOther(this, 'costOfPainOther')">Other
+              </label>
+            </div>
+            <input class="input mt-10" type="text" name="costOfPainOther" id="costOfPainOther" placeholder="Please specify" style="display:none;">
+          </div>
+
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="label">What did they try before? <span class="muted">(pick 1)</span></label>
+              <select class="select" name="triedBefore">
+                <option value="">Select...</option>
+                <option value="Internal build">Internal build</option>
+                <option value="Existing BI tool">Existing BI tool</option>
+                <option value="Spreadsheet/manual">Spreadsheet/manual</option>
+                <option value="Prior vendor/agency">Prior vendor/agency</option>
+                <option value="Nothing">Nothing</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="label">Success definition <span class="muted">(pick 1 primary)</span></label>
+              <select class="select" name="successDef" onchange="toggleOtherInput(this, 'successDefOther')">
+                <option value="">Select...</option>
+                <option value="Faster cycle time">Faster cycle time</option>
+                <option value="Single source of truth">Single source of truth</option>
+                <option value="Higher adoption">Higher adoption</option>
+                <option value="Improved accuracy">Improved accuracy</option>
+                <option value="Better visibility/KPIs">Better visibility/KPIs</option>
+                <option value="Reduced manual effort">Reduced manual effort</option>
+                <option value="Compliance-ready reporting">Compliance-ready reporting</option>
+                <option value="Launch MVP">Launch MVP</option>
+                <option value="Other">Other</option>
+              </select>
+              <input class="input mt-10" type="text" name="successDefOther" id="successDefOther" placeholder="Please specify" style="display:none;">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Target metric <span class="muted">(optional)</span></label>
+            <input class="input" type="text" name="targetMetric" />
+          </div>
+        </section>
+
+        <!-- Implementation -->
+        <section class="section">
+          <div class="section__header">
+            <h2 class="section__title">Implementation</h2>
+          </div>
+
+          <div class="field">
+            <label class="label">Top 3 blockers <span class="muted">(pick up to 3)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="blockers">
+              <label class="option"><input type="checkbox" name="blockers" value="Data access">Data access</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Data quality">Data quality</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Integration/legacy systems">Integration/legacy systems</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Security/IT approvals">Security/IT approvals</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Scope ambiguity">Scope ambiguity</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Stakeholder misalignment">Stakeholder misalignment</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Change management/adoption">Change management/adoption</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Tight timeline">Tight timeline</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Budget constraint">Budget constraint</label>
+              <label class="option"><input type="checkbox" name="blockers" value="Vendor dependency">Vendor dependency</label>
+              <label class="option">
+                <input type="checkbox" name="blockers" value="Other" onchange="toggleCheckboxOther(this, 'blockersOther')">Other
+              </label>
+            </div>
+            <input class="input mt-10" type="text" name="blockersOther" id="blockersOther" placeholder="Please specify" style="display:none;">
+          </div>
+
+          <div class="field">
+            <label class="label">What took most effort? <span class="muted">(pick 1–2)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="mostEffort">
+              <label class="option"><input type="checkbox" name="mostEffort" value="Data cleaning">Data cleaning</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Data modeling/warehouse design">Data modeling/warehouse design</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Pipeline reliability">Pipeline reliability</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Integrations">Integrations</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Dashboard metric definitions">Dashboard metric definitions</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Frontend build">Frontend build</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="UI/UX research/design">UI/UX research/design</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Performance/scalability">Performance/scalability</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Security/compliance">Security/compliance</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="Stakeholder feedback loops">Stakeholder feedback loops</label>
+              <label class="option"><input type="checkbox" name="mostEffort" value="QA/bug fixing">QA/bug fixing</label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3) Business Impact -->
+        <section class="section">
+          <div class="section__header">
+            <h2 class="section__title">3) Business Impact</h2>
+          </div>
+
+          <div class="field">
+            <label class="label">What changed? <span class="muted">(pick 1–3)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="whatChanged">
+              <label class="option"><input type="checkbox" name="whatChanged" value="Faster reporting">Faster reporting</label>
+              <label class="option"><input type="checkbox" name="whatChanged" value="Better decision visibility">Better decision visibility</label>
+              <label class="option"><input type="checkbox" name="whatChanged" value="Reduced manual workload">Reduced manual workload</label>
+              <label class="option"><input type="checkbox" name="whatChanged" value="More reliable data">More reliable data</label>
+              <label class="option"><input type="checkbox" name="whatChanged" value="Better user experience">Better user experience</label>
+              <label class="option"><input type="checkbox" name="whatChanged" value="Automated workflow">Automated workflow</label>
+              <label class="option"><input type="checkbox" name="whatChanged" value="Improved collaboration">Improved collaboration</label>
+              <label class="option"><input type="checkbox" name="whatChanged" value="Reduced risk">Reduced risk</label>
+              <label class="option">
+                <input type="checkbox" name="whatChanged" value="Other" onchange="toggleCheckboxOther(this, 'whatChangedOther')">Other
+              </label>
+            </div>
+            <input class="input mt-10" type="text" name="whatChangedOther" id="whatChangedOther" placeholder="Please specify" style="display:none;">
+          </div>
+
+          <div class="field">
+            <label class="label">Impact type <span class="muted">(best 1–3)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="impactType">
+              <label class="option"><input type="checkbox" name="impactType" value="Hours saved">Hours saved</label>
+              <label class="option"><input type="checkbox" name="impactType" value="Cycle time reduced">Cycle time reduced</label>
+              <label class="option"><input type="checkbox" name="impactType" value="Reporting latency reduced">Reporting latency reduced</label>
+              <label class="option"><input type="checkbox" name="impactType" value="Error rate reduced">Error rate reduced</label>
+              <label class="option"><input type="checkbox" name="impactType" value="Adoption increased">Adoption increased</label>
+              <label class="option"><input type="checkbox" name="impactType" value="Revenue enabled">Revenue enabled</label>
+              <label class="option"><input type="checkbox" name="impactType" value="Cost avoided">Cost avoided</label>
+              <label class="option"><input type="checkbox" name="impactType" value="SLA/reliability improved">SLA/reliability improved</label>
+              <label class="option"><input type="checkbox" name="impactType" value="Compliance readiness improved">Compliance readiness improved</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Before → After numbers <span class="muted">(optional)</span></label>
+            <div class="grid grid--2">
+              <input class="input" type="text" name="metric1Before" placeholder="Metric 1 - Before" />
+              <input class="input" type="text" name="metric1After" placeholder="Metric 1 - After" />
+              <input class="input" type="text" name="metric2Before" placeholder="Metric 2 - Before" />
+              <input class="input" type="text" name="metric2After" placeholder="Metric 2 - After" />
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="label">Time-to-first-value <span class="muted">(pick 1)</span></label>
+              <select class="select" name="timeToValue">
+                <option value="">Select...</option>
+                <option value="<1 week">&lt;1 week</option>
+                <option value="1–2 weeks">1–2 weeks</option>
+                <option value="2–4 weeks">2–4 weeks</option>
+                <option value="1–2 months">1–2 months</option>
+                <option value="2+ months">2+ months</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="label">Adoption at 30–90 days <span class="muted">(pick 1)</span></label>
+              <select class="select" name="adoption">
+                <option value="">Select...</option>
+                <option value="High (used weekly by target users)">High (used weekly by target users)</option>
+                <option value="Medium (used monthly / some teams)">Medium (used monthly / some teams)</option>
+                <option value="Low (rare use)">Low (rare use)</option>
+                <option value="None">None</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4) Strategy + Sales -->
+        <section class="section">
+          <div class="section__header">
+            <h2 class="section__title">4) Strategy + Sales</h2>
+          </div>
+
+          <div class="field">
+            <label class="label">Why we won <span class="muted">(pick top 1–2)</span></label>
+            <div class="options-grid checkbox-group" data-group-name="whyWon">
+              <label class="option"><input type="checkbox" name="whyWon" value="Speed to deliver">Speed to deliver</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Technical depth">Technical depth</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Strong UX">Strong UX</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Trusted delivery/reliability">Trusted delivery/reliability</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Cost/value">Cost/value</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Domain familiarity">Domain familiarity</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Integration capability">Integration capability</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Communication/clarity">Communication/clarity</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Flexibility">Flexibility</label>
+              <label class="option"><input type="checkbox" name="whyWon" value="Existing relationship/referral">Existing relationship/referral</label>
+              <label class="option">
+                <input type="checkbox" name="whyWon" value="Other" onchange="toggleCheckboxOther(this, 'whyWonOther')">Other
+              </label>
+            </div>
+            <input class="input mt-10" type="text" name="whyWonOther" id="whyWonOther" placeholder="Please specify" style="display:none;">
+          </div>
+
+          <div class="grid grid--2">
+            <div class="field">
+              <label class="label">Objection <span class="muted">(pick 1)</span></label>
+              <select class="select" name="objection">
+                <option value="">Select...</option>
+                <option value="Price">Price</option>
+                <option value="Security concerns">Security concerns</option>
+                <option value="Build in-house">Build in-house</option>
+                <option value="Timeline doubts">Timeline doubts</option>
+                <option value="Tool preference">Tool preference</option>
+                <option value="Data privacy">Data privacy</option>
+                <option value="Stakeholder skepticism">Stakeholder skepticism</option>
+                <option value="Scope uncertainty">Scope uncertainty</option>
+                <option value="Vendor risk">Vendor risk</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="label">Response that worked <span class="muted">(pick 1)</span></label>
+              <select class="select" name="response">
+                <option value="">Select...</option>
+                <option value="Pilot/MVP">Pilot/MVP</option>
+                <option value="Clear ROI model">Clear ROI model</option>
+                <option value="Strong demo">Strong demo</option>
+                <option value="Reference/case study">Reference/case study</option>
+                <option value="Security documentation">Security documentation</option>
+                <option value="Phased delivery plan">Phased delivery plan</option>
+                <option value="Fixed-scope offer">Fixed-scope offer</option>
+                <option value="Better stakeholder alignment">Better stakeholder alignment</option>
+                <option value="Faster timeline proof">Faster timeline proof</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Reusable asset created <span class="muted">(pick 1–2 or "none")</span></label>
+            <div class="options-grid checkbox-group" data-group-name="reusableAsset">
+              <label class="option"><input type="checkbox" name="reusableAsset" value="ETL/pipeline template">ETL/pipeline template</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Data model/semantic layer starter">Data model/semantic layer starter</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Dashboard template">Dashboard template</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Component library">Component library</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Design system">Design system</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Auth/integration module">Auth/integration module</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Deployment/CI template">Deployment/CI template</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Monitoring/alerting setup">Monitoring/alerting setup</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="Documentation/training pack">Documentation/training pack</label>
+              <label class="option"><input type="checkbox" name="reusableAsset" value="None">None</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Reusability score <span class="muted">(pick 1)</span></label>
+            <select class="select" name="reusabilityScore">
+              <option value="">Select...</option>
+              <option value="1 (no reuse)">1 (no reuse)</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5 (high reuse)">5 (high reuse)</option>
+            </select>
+          </div>
+        </section>
+
+        <footer class="footer-note">
+          <span class="muted">Everything is optional — fill what you know, skip what you don’t.</span>
+        </footer>
+      </form>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <script src="./script.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>
