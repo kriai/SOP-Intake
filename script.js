@@ -65,8 +65,8 @@ function showToast(message) {
   showToast._t = setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
-function valOrNA(value) {
-  return value && String(value).trim() ? value : "N/A";
+function valOrBlank(value) {
+  return value && String(value).trim() ? String(value).trim() : "";
 }
 
 function currencyWithOther(selectName, otherId) {
@@ -78,6 +78,26 @@ function currencyWithOther(selectName, otherId) {
     return other && other.value.trim() ? `Other: ${other.value.trim()}` : "Other";
   }
   return selected || "";
+}
+
+/* --- CSV helpers --- */
+function csvEscape(value) {
+  const s = String(value ?? "");
+  // escape quotes by doubling them
+  const escaped = s.replace(/"/g, '""');
+  // wrap in quotes if it contains comma, quote, or newline
+  if (/[",\n\r]/.test(escaped)) return `"${escaped}"`;
+  return escaped;
+}
+
+function buildCsvRow(key, value) {
+  return `${csvEscape(key)},${csvEscape(value)}`;
+}
+
+function buildCsv(rows) {
+  // header row
+  const header = "Field,Value";
+  return [header, ...rows].join("\n");
 }
 
 /* --- Micro-interaction: ripple on button click --- */
@@ -101,12 +121,11 @@ function addRipple(e) {
   ripple.addEventListener("animationend", () => ripple.remove());
 }
 
-/* --- Playful-but-pro animation: scroll reveal --- */
+/* --- Scroll reveal --- */
 function setupReveal() {
   const sections = document.querySelectorAll(".section");
   sections.forEach((s) => s.classList.add("reveal"));
 
-  // If IntersectionObserver not supported, just show all
   if (!("IntersectionObserver" in window)) {
     sections.forEach((s) => s.classList.add("is-visible"));
     return;
@@ -135,10 +154,8 @@ function setupCheckboxDelight() {
       const label = cb.closest(".option");
       if (!label) return;
 
-      // Toggle class so CSS can animate the label
       if (cb.checked) {
-        label.classList.remove("checked"); // restart animation
-        // next frame re-add
+        label.classList.remove("checked");
         requestAnimationFrame(() => label.classList.add("checked"));
       } else {
         label.classList.remove("checked");
@@ -147,94 +164,82 @@ function setupCheckboxDelight() {
   });
 }
 
-function generateDownload() {
+function generateDownloadCSV() {
   const form = document.getElementById("sopForm");
   if (!form) return;
 
   const companyProjectName = form.companyProjectName?.value || "";
   const safeName = sanitizeFilename(companyProjectName) || "Unknown";
-  const fileName = `SOP_${safeName}.txt`;
+  const fileName = `SOP_${safeName}.csv`;
 
   const revenueCurrency = currencyWithOther("revenueCurrency", "revenueCurrencyOther");
   const marketCapCurrency = currencyWithOther("marketCapCurrency", "marketCapCurrencyOther");
 
-  let content = "LEAN SOP FORM\n";
-  content += "=".repeat(80) + "\n\n";
+  const rows = [];
 
-  content += `Company/Project name: ${valOrNA(companyProjectName)}\n\n`;
+  // Company / Project
+  rows.push(buildCsvRow("Company/Project name", valOrBlank(companyProjectName)));
 
-  content += "COMPANY DETAILS\n";
-  content += "-".repeat(80) + "\n";
-  content += `Headquartered in: ${valOrNA(form.hqIn?.value)}\n`;
-  content += `Chairman: ${valOrNA(form.chairman?.value)}\n`;
-  content += `CEO: ${valOrNA(form.ceo?.value)}\n`;
+  // Company Details
+  rows.push(buildCsvRow("Headquartered in", valOrBlank(form.hqIn?.value)));
+  rows.push(buildCsvRow("Chairman", valOrBlank(form.chairman?.value)));
+  rows.push(buildCsvRow("CEO", valOrBlank(form.ceo?.value)));
 
-  const revVal = form.revenueValue?.value;
-  content += `Revenue: ${valOrNA(revVal)} ${valOrNA(revenueCurrency)}\n`;
+  rows.push(buildCsvRow("Revenue value", valOrBlank(form.revenueValue?.value)));
+  rows.push(buildCsvRow("Revenue currency", valOrBlank(revenueCurrency)));
 
-  const mcVal = form.marketCapValue?.value;
-  content += `Market cap: ${valOrNA(mcVal)} ${valOrNA(marketCapCurrency)}\n`;
+  rows.push(buildCsvRow("Market cap value", valOrBlank(form.marketCapValue?.value)));
+  rows.push(buildCsvRow("Market cap currency", valOrBlank(marketCapCurrency)));
 
-  content += `Client vertical: ${valOrNA(getSelectValue("vertical"))}\n`;
-  content += `Employee headcount: ${valOrNA(form.employeeHeadcount?.value)}\n`;
-  content += `Products and services: ${valOrNA(form.productsServices?.value)}\n`;
-  content += `Product sales in more than _ countries: ${valOrNA(form.salesCountriesMoreThan?.value)}\n`;
-  content += `Administrative presence in _ countries: ${valOrNA(form.adminCountries?.value)}\n`;
-  content += `Manufacturing presence in _ countries: ${valOrNA(form.manufacturingCountries?.value)}\n`;
-  content += `Operating HQ in _ countries: ${valOrNA(form.operatingHqCountries?.value)}\n`;
-  content += `Geographic HQ in _ countries: ${valOrNA(form.geographicHqCountries?.value)}\n`;
-  content += `Recent executive changes: ${valOrNA(form.recentExecChanges?.value)}\n\n`;
+  rows.push(buildCsvRow("Client vertical", valOrBlank(getSelectValue("vertical"))));
+  rows.push(buildCsvRow("Employee headcount", valOrBlank(form.employeeHeadcount?.value)));
+  rows.push(buildCsvRow("Products and services", valOrBlank(form.productsServices?.value)));
 
-  content += "1) CASE OVERVIEW\n";
-  content += "-".repeat(80) + "\n";
-  content += `What did we deliver: ${valOrNA(form.delivery?.value)}\n`;
-  content += `Primary solution domain: ${valOrNA(getSelectValue("primaryDomain"))}\n`;
-  content += `Secondary domains: ${valOrNA(getCheckboxValues("secondaryDomains"))}\n`;
-  content += `Buyer role: ${valOrNA(getSelectValue("buyer"))}\n`;
-  content += `Primary users: ${valOrNA(getCheckboxValues("primaryUsers"))}\n\n`;
+  rows.push(buildCsvRow("Product sales in more than _ countries", valOrBlank(form.salesCountriesMoreThan?.value)));
+  rows.push(buildCsvRow("Administrative presence in _ countries", valOrBlank(form.adminCountries?.value)));
+  rows.push(buildCsvRow("Manufacturing presence in _ countries", valOrBlank(form.manufacturingCountries?.value)));
+  rows.push(buildCsvRow("Operating HQ in _ countries", valOrBlank(form.operatingHqCountries?.value)));
+  rows.push(buildCsvRow("Geographic HQ in _ countries", valOrBlank(form.geographicHqCountries?.value)));
+  rows.push(buildCsvRow("Recent executive changes", valOrBlank(form.recentExecChanges?.value)));
 
-  content += "2) CLIENT PAIN POINTS + IMPLEMENTATION CHALLENGENGES\n";
-  content += "-".repeat(80) + "\n";
-  content += `Trigger (why now): ${valOrNA(getCheckboxValues("trigger"))}\n`;
-  content += `Cost of pain: ${valOrNA(getCheckboxValues("costOfPain"))}\n`;
-  content += `What did they try before: ${valOrNA(form.triedBefore?.value)}\n`;
-  content += `Success definition: ${valOrNA(getSelectValue("successDef"))}\n`;
-  content += `Target metric: ${valOrNA(form.targetMetric?.value)}\n\n`;
+  // 1) Case Overview
+  rows.push(buildCsvRow("What did we deliver", valOrBlank(form.delivery?.value)));
+  rows.push(buildCsvRow("Primary solution domain", valOrBlank(getSelectValue("primaryDomain"))));
+  rows.push(buildCsvRow("Secondary domains", valOrBlank(getCheckboxValues("secondaryDomains"))));
+  rows.push(buildCsvRow("Buyer role", valOrBlank(getSelectValue("buyer"))));
+  rows.push(buildCsvRow("Primary users", valOrBlank(getCheckboxValues("primaryUsers"))));
 
-  content += "IMPLEMENTATION\n";
-  content += "-".repeat(80) + "\n";
-  content += `Top 3 blockers: ${valOrNA(getCheckboxValues("blockers"))}\n`;
-  content += `What took most effort: ${valOrNA(getCheckboxValues("mostEffort"))}\n\n`;
+  // 2) Pain Points
+  rows.push(buildCsvRow("Trigger (why now)", valOrBlank(getCheckboxValues("trigger"))));
+  rows.push(buildCsvRow("Cost of pain", valOrBlank(getCheckboxValues("costOfPain"))));
+  rows.push(buildCsvRow("What did they try before", valOrBlank(form.triedBefore?.value)));
+  rows.push(buildCsvRow("Success definition", valOrBlank(getSelectValue("successDef"))));
+  rows.push(buildCsvRow("Target metric", valOrBlank(form.targetMetric?.value)));
 
-  content += "3) BUSINESS IMPACT\n";
-  content += "-".repeat(80) + "\n";
-  content += `What changed: ${valOrNA(getCheckboxValues("whatChanged"))}\n`;
-  content += `Impact type: ${valOrNA(getCheckboxValues("impactType"))}\n`;
+  // Implementation
+  rows.push(buildCsvRow("Top 3 blockers", valOrBlank(getCheckboxValues("blockers"))));
+  rows.push(buildCsvRow("What took most effort", valOrBlank(getCheckboxValues("mostEffort"))));
 
-  const m1b = form.metric1Before?.value;
-  const m1a = form.metric1After?.value;
-  const m2b = form.metric2Before?.value;
-  const m2a = form.metric2After?.value;
+  // 3) Business Impact
+  rows.push(buildCsvRow("What changed", valOrBlank(getCheckboxValues("whatChanged"))));
+  rows.push(buildCsvRow("Impact type", valOrBlank(getCheckboxValues("impactType"))));
+  rows.push(buildCsvRow("Metric 1 - Before", valOrBlank(form.metric1Before?.value)));
+  rows.push(buildCsvRow("Metric 1 - After", valOrBlank(form.metric1After?.value)));
+  rows.push(buildCsvRow("Metric 2 - Before", valOrBlank(form.metric2Before?.value)));
+  rows.push(buildCsvRow("Metric 2 - After", valOrBlank(form.metric2After?.value)));
+  rows.push(buildCsvRow("Time-to-first-value", valOrBlank(form.timeToValue?.value)));
+  rows.push(buildCsvRow("Adoption at 30–90 days", valOrBlank(form.adoption?.value)));
 
-  if ((m1b && m1b.trim()) || (m1a && m1a.trim())) {
-    content += `Metric 1: ${valOrNA(m1b)} → ${valOrNA(m1a)}\n`;
-  }
-  if ((m2b && m2b.trim()) || (m2a && m2a.trim())) {
-    content += `Metric 2: ${valOrNA(m2b)} → ${valOrNA(m2a)}\n`;
-  }
+  // 4) Strategy + Sales
+  rows.push(buildCsvRow("Why we won", valOrBlank(getCheckboxValues("whyWon"))));
+  rows.push(buildCsvRow("Objection", valOrBlank(form.objection?.value)));
+  rows.push(buildCsvRow("Response that worked", valOrBlank(form.response?.value)));
+  rows.push(buildCsvRow("Reusable asset created", valOrBlank(getCheckboxValues("reusableAsset"))));
+  rows.push(buildCsvRow("Reusability score", valOrBlank(form.reusabilityScore?.value)));
 
-  content += `Time-to-first-value: ${valOrNA(form.timeToValue?.value)}\n`;
-  content += `Adoption at 30-90 days: ${valOrNA(form.adoption?.value)}\n\n`;
+  const csv = buildCsv(rows);
 
-  content += "4) STRATEGY + SALES\n";
-  content += "-".repeat(80) + "\n";
-  content += `Why we won: ${valOrNA(getCheckboxValues("whyWon"))}\n`;
-  content += `Objection: ${valOrNA(form.objection?.value)}\n`;
-  content += `Response that worked: ${valOrNA(form.response?.value)}\n`;
-  content += `Reusable asset created: ${valOrNA(getCheckboxValues("reusableAsset"))}\n`;
-  content += `Reusability score: ${valOrNA(form.reusabilityScore?.value)}\n`;
-
-  const blob = new Blob([content], { type: "text/plain" });
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
@@ -276,9 +281,7 @@ function resetForm() {
     el.value = "";
   });
 
-  // remove “checked” animation state
   document.querySelectorAll(".option.checked").forEach((x) => x.classList.remove("checked"));
-
   showToast("Form cleared.");
 }
 
@@ -318,10 +321,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadBtn = document.getElementById("downloadBtn");
   const clearBtn = document.getElementById("clearBtn");
 
-  downloadBtn?.addEventListener("click", generateDownload);
+  downloadBtn?.addEventListener("click", generateDownloadCSV);
   clearBtn?.addEventListener("click", resetForm);
 
-  // Ripple animations on buttons
+  // Ripple animations
   downloadBtn?.addEventListener("click", addRipple);
   clearBtn?.addEventListener("click", addRipple);
 
